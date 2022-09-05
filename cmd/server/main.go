@@ -1,36 +1,19 @@
 package main
 
 import (
-	"database/sql"
-
 	"log"
 	"net/http"
 	"os"
 
-	_ "github.com/mattn/go-sqlite3"
+	"github.com/ec965/rss-server/pkgs/models"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 )
 
 func main() {
-	version := ""
-	db, err := sql.Open("sqlite3", "test.db")
-
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	log.Print("connected to db")
-
+	db := models.Init("test.db")
 	defer db.Close()
-
-	err = db.QueryRow("SELECT SQLITE_VERSION()").Scan(&version)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	log.Print(version)
 
 	r := chi.NewRouter()
 	r.Use(middleware.Logger)

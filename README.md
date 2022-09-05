@@ -21,20 +21,13 @@
 
 ## DB Tables
 
-**rss_urls**
-
-| Type   | Label | Description  |
-| ------ | ----- | ------------ |
-| ID     | id    | id           |
-| String | url   | RSS feed url |
-
 **rss_feeds**
 
-| Type   | Label      | Description                          |
-| ------ | ---------- | ------------------------------------ |
-| ID     | id         | id                                   |
-| String | json       | most up to date parsed rss feed json |
-| ID     | rss_url_id | fk to rss_urls id                    |
+| Type   | Label | Description                          |
+| ------ | ----- | ------------------------------------ |
+| ID     | id    | id                                   |
+| String | url   | RSS feed url                         |
+| String | data | most up to date parsed rss feed json |
 
 **user**
 

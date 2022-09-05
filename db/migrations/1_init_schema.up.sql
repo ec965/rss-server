@@ -1,0 +1,5 @@
+CREATE TABLE rss_feed (
+  id INTEGER PRIMARY KEY,
+  url TEXT NOT NULL,
+  Data TEXT
+);
