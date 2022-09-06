@@ -17,7 +17,7 @@ docker-run:
 .PHONY: docker-run
 
 fly-migrate:
-	flyctl ssh console -C './opt/migrate"'
+	flyctl ssh console -C '/opt/migrate"'
 .PHONY: fly-migrate
 
 clean:
