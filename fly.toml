@@ -7,7 +7,8 @@ processes = []
 
 [env]
   PORT = "8080"
-  DTABASE_URL = "/mnt/database/rss-server.sqlite"
+  DATABASE_URL = "/mnt/database/rss-server.sqlite"
+  MIGRATIONS_DIR = "file:///opt/db/migrations"
 
 [experimental]
   allowed_public_ports = []

@@ -24,14 +24,13 @@ func Init(dataSourceName string) *sql.DB {
 	return db
 }
 
-func Migrate() {
+func Migrate(migrationsDir string) {
 	instance, err := sqlite3.WithInstance(db, &sqlite3.Config{})
 
 	if err != nil {
 		log.Fatal(err)
 	}
-
-	m, err := migrate.NewWithDatabaseInstance("file://db/migrations", "sqlite3", instance)
+	m, err := migrate.NewWithDatabaseInstance(migrationsDir, "sqlite3", instance)
 
 	if err := m.Up(); err != nil {
 		log.Fatal(err)

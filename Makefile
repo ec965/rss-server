@@ -16,5 +16,9 @@ docker-run:
 	docker run --name rss-server -p 127.0.0.1:3000:3000/tcp rss-server 
 .PHONY: docker-run
 
+fly-migrate:
+	flyctl ssh console -C './opt/migrate"'
+.PHONY: fly-migrate
+
 clean:
 	rm rss-server
