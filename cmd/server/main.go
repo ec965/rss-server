@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/ec965/rss-server/pkgs/handlers"
 	"github.com/ec965/rss-server/pkgs/models"
 
 	"github.com/go-chi/chi/v5"
@@ -17,9 +18,9 @@ func main() {
 
 	r := chi.NewRouter()
 	r.Use(middleware.Logger)
-	r.Get("/", func(w http.ResponseWriter, r *http.Request) {
-		w.Write([]byte("hello world"))
-	})
+	r.Get("/feeds", handlers.GetFeeds)
+	r.Post("/update", handlers.UpdateFeeds)
+	r.Post("/add", handlers.AddFeed)
 
 	port := os.Getenv("PORT")
 	if port == "" {

@@ -42,7 +42,7 @@ func SelectAllRSSFeeds(ctx context.Context) ([]RSSFeed, error) {
 }
 
 // InsertRSSItem inserts a new rss item into the database
-func InsertRSSItem(ctx context.Context, url string, data string) (int64, error) {
+func InsertRSSItem(ctx context.Context, url string, data []byte) (int64, error) {
 	stmt, err := db.PrepareContext(ctx, "INSERT INTO rss_feeds (url, data) VALUES (?, ?)")
 
 	var newId int64
@@ -64,11 +64,10 @@ func InsertRSSItem(ctx context.Context, url string, data string) (int64, error) 
 	}
 
 	return newId, nil
-
 }
 
 // UpdateRSSFeedById updates an rss feed with new stringified json
-func UpdateRSSFeedById(ctx context.Context, id string, data string) error {
+func UpdateRSSFeedById(ctx context.Context, id int64, data string) error {
 	stmt, err := db.PrepareContext(ctx, "UPDATE rss_feeds SET data = ? WHERE id = ?")
 
 	if err != nil {
