@@ -1,16 +1,12 @@
 all: server
 
 run:
-	go run cmd/server/main.go
+	go run main.go
 .PHONY: run
 
 migrate:
 	go run cmd/migrate/main.go
 .PHONY: migrate
 
-server:
-	go build -o bin/server cmd/server/main.go
-.PHONY: server
-
 clean:
-	rm server
+	rm rss-server
