@@ -9,13 +9,18 @@ import (
 	"github.com/ec965/rss-server/pkgs/rss"
 )
 
+type UrlFeedBody struct {
+	Url string `json:"url"`
+}
+
 func UpdateFeeds(w http.ResponseWriter, r *http.Request) {
 	err := rss.UpdateAllFeeds()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	w.WriteHeader(http.StatusOK)
+
+	GetFeeds(w, r)
 }
 
 func GetFeeds(w http.ResponseWriter, r *http.Request) {
@@ -42,12 +47,8 @@ func GetFeeds(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte(json))
 }
 
-type AddFeedBody struct {
-	Url string `json:"url"`
-}
-
 func AddFeed(w http.ResponseWriter, r *http.Request) {
-	var body AddFeedBody
+	var body UrlFeedBody
 	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
@@ -60,6 +61,22 @@ func AddFeed(w http.ResponseWriter, r *http.Request) {
 	}
 
 	_, err = models.InsertRSSItem(context.TODO(), body.Url, data)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+}
+
+func DeleteFeed(w http.ResponseWriter, r *http.Request) {
+	var body UrlFeedBody
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	err := models.DeleteRSSItemByUrl(context.TODO(), body.Url)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return

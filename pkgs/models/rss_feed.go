@@ -94,7 +94,7 @@ func SelectAllRSSUrls(ctx context.Context) ([]RSSUrl, error) {
 	var urls []RSSUrl
 
 	for rows.Next() {
-		var url RSSUrl;
+		var url RSSUrl
 		if err := rows.Scan(&url.Id, &url.Url); err != nil {
 			return urls, err
 		}
@@ -106,4 +106,16 @@ func SelectAllRSSUrls(ctx context.Context) ([]RSSUrl, error) {
 	}
 
 	return urls, nil
+}
+
+func DeleteRSSItemByUrl(ctx context.Context, url string) error {
+	stmt, err := db.PrepareContext(ctx, "DELETE FROM rss_feeds WHERE url = ?")
+	_, err = stmt.ExecContext(ctx, url)
+
+	if err != nil {
+		return err
+
+	}
+	return nil
+
 }

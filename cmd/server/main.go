@@ -13,20 +13,34 @@ import (
 )
 
 func main() {
-	db := models.Init("test.db")
+	port := getEnv("PORT", "3000")
+	dbUrl := getEnv("DATABASE_URL", "test.db")
+
+	db := models.Init(dbUrl)
 	defer db.Close()
 
 	r := chi.NewRouter()
+
 	r.Use(middleware.Logger)
 	r.Get("/feeds", handlers.GetFeeds)
-	r.Post("/update", handlers.UpdateFeeds)
-	r.Post("/add", handlers.AddFeed)
-
-	port := os.Getenv("PORT")
-	if port == "" {
-		port = "3000"
-	}
+	r.Get("/feeds/update", handlers.UpdateFeeds)
+	r.Post("/feed", handlers.AddFeed)
+	r.Delete("/feed", handlers.DeleteFeed)
 
 	log.Print("Listening on http://localhost:" + port)
-	http.ListenAndServe(":"+port, r)
+
+	err := http.ListenAndServe(":"+port, r)
+
+	if err != nil {
+		log.Fatal(err)
+	}
+}
+
+// getEnv gets the ENV key with fallback if it's not found
+func getEnv(key string, fallback string) string {
+	v := os.Getenv(key)
+	if v == "" {
+		return fallback
+	}
+	return v
 }
