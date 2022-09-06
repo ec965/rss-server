@@ -1,5 +1,5 @@
-CREATE TABLE rss_feed (
+CREATE TABLE rss_feeds (
   id INTEGER PRIMARY KEY,
   url TEXT NOT NULL,
-  Data TEXT
+  data TEXT
 );

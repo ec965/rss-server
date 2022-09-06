@@ -1,1 +1,1 @@
-DROP TABLE IF EXISTS rss_feed;
+DROP TABLE IF EXISTS rss_feeds;
