@@ -1,5 +1,7 @@
 # RSS Server
 
+Simple RSS feed consumer server written in Go and deployed with [Fly.io](https://fly.io).
+
 ## Design
 
 ### v0
