@@ -2,6 +2,7 @@ package models
 
 import (
 	"database/sql"
+	"errors"
 	"log"
 
 	"github.com/golang-migrate/migrate/v4"
@@ -24,15 +25,17 @@ func Init(dataSourceName string) *sql.DB {
 	return db
 }
 
-func Migrate(migrationsDir string) {
+func Migrate(sourceUrl string) {
 	instance, err := sqlite3.WithInstance(db, &sqlite3.Config{})
 
 	if err != nil {
 		log.Fatal(err)
 	}
-	m, err := migrate.NewWithDatabaseInstance(migrationsDir, "sqlite3", instance)
+	m, err := migrate.NewWithDatabaseInstance(sourceUrl, "sqlite3", instance)
 
-	if err := m.Up(); err != nil {
-		log.Fatal(err)
+	if err := m.Up(); errors.Is(err, migrate.ErrNoChange) {
+		log.Println(err)
+	} else if err != nil {
+		log.Fatalln(err)
 	}
 }
