@@ -18,12 +18,12 @@ var ErrUserEmailNotFound = errors.New("email not found")
 var ErrUserPasswordInvalid = errors.New("invalid password")
 
 func InsertUser(ctx context.Context, email string, password string) (int64, error) {
-	password_hash, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+	passwordHash, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 	if err != nil {
 		return 0, err
 	}
 
-	res, err := db.ExecContext(ctx, "INSERT INTO user (email, password) VALUES (?,?);", email, password_hash)
+	res, err := db.ExecContext(ctx, "INSERT INTO user (email, password) VALUES (?,?);", email, passwordHash)
 	if err != nil {
 		return 0, err
 	}
@@ -33,7 +33,7 @@ func InsertUser(ctx context.Context, email string, password string) (int64, erro
 
 func SelectUserByEmail(ctx context.Context, email string, password string) (User, error) {
 	var user User
-	err := db.QueryRowContext(ctx, "SELECT user_id, email, password FROM user WHERE email = ?;", email).Scan(&user.Id, &user.Email, &user.PasswordHash)
+	err := db.QueryRowContext(ctx, "SELECT userId, email, password FROM user WHERE email = ?;", email).Scan(&user.Id, &user.Email, &user.PasswordHash)
 	switch {
 	case err == sql.ErrNoRows:
 		return user, ErrUserEmailNotFound

@@ -24,13 +24,13 @@ func rssFeedMapToSlice(m *map[int64]*RssFeed) []*RssFeed {
 func SelectAllFeedsForUser(ctx context.Context, userId int64) ([]*RssFeed, error) {
 	rows, err := db.QueryContext(ctx,
 		`SELECT 
-      r.rss_feed_id, 
+      r.rssFeedId, 
       r.url,
 			r.label,
       t.label as tag
-    FROM rss_feed r
-    LEFT JOIN tag t ON t.rss_feed_id = r.rss_feed_id
-    WHERE r.user_id = ?;`, userId)
+    FROM rssFeed r
+    LEFT JOIN tag t ON t.rssFeedId = r.rssFeedId
+    WHERE r.userId = ?;`, userId)
 
 	if err != nil {
 		return nil, err
@@ -80,13 +80,13 @@ func SelectFeedForUser(ctx context.Context, userId int64, rssFeedId int64) (RssF
 
 	rows, err := db.QueryContext(ctx,
 		`SELECT
-  r.rss_feed_id,
+  r.rssFeedId,
   r.url,
 	r.label,
   t.label as tag
-FROM rss_feed r
-LEFT JOIN tag t on t.rss_feed_id = r.rss_feed_id
-WHERE r.user_id = ? AND r.rss_feed_id = ?;`, userId, rssFeedId)
+FROM rssFeed r
+LEFT JOIN tag t on t.rssFeedId = r.rssFeedId
+WHERE r.userId = ? AND r.rssFeedId = ?;`, userId, rssFeedId)
 	if err != nil {
 		return feed, err
 	}
@@ -110,7 +110,7 @@ WHERE r.user_id = ? AND r.rss_feed_id = ?;`, userId, rssFeedId)
 
 func InsertFeedForUser(ctx context.Context, userId int64, url string, label string) (int64, error) {
 	res, err := db.ExecContext(ctx,
-		`INSERT INTO rss_feed (user_id, url, label) VALUES (?, ?, ?);`, userId, url, label)
+		`INSERT INTO rssFeed (userId, url, label) VALUES (?, ?, ?);`, userId, url, label)
 
 	if err != nil {
 		return 0, err
@@ -121,7 +121,7 @@ func InsertFeedForUser(ctx context.Context, userId int64, url string, label stri
 
 func DeleteFeedForUser(ctx context.Context, userId int64, rssFeedId int64) (int64, error) {
 	res, err := db.ExecContext(ctx,
-		`DELETE FROM rss_feed WHERE user_id = ? AND rss_feed_id = ?;`,
+		`DELETE FROM rssFeed WHERE userId = ? AND rssFeedId = ?;`,
 		userId,
 		rssFeedId,
 	)
