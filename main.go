@@ -14,7 +14,7 @@ import (
 
 func main() {
 	port := env.Get("PORT", "3000")
-	dbUrl := env.Get("DATABASE_URL", "test.db")
+	dbUrl := env.Get("DATABASE_URL", "test.sqlite")
 
 	db := models.Init(dbUrl)
 	defer db.Close()
