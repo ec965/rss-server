@@ -17,4 +17,4 @@ CREATE TABLE tag (
   label TEXT NOT NULL,
   rssFeedId INTEGER NOT NULL,
   FOREIGN KEY(rssFeedId) REFERENCES rssFeed(rssFeedId)
-)
+);
