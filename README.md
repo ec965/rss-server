@@ -7,19 +7,14 @@ Simple RSS feed consumer server written in Go and deployed with [Fly.io](https:/
 ### v0
 
 1. Users can add new RSS urls
-1. RSS urls are stored in a table
-1. RSS feeds are refreshed by cron job
-1. Feeds are parsed into consumable JSON, stringified, and saved in a table
-1. Users can request RSS payloads
 
 ### v1
 
 1. Implement Authentication and users
-2. All RSS urls and data is still saved globally but users can own a list of RSS urls
 
 ### v2
 
-1. Add tags - RSS feeds can be organized into folders of depth 1
+2. users can tag their feeds with custom labels
 
 ## DB Tables
 
