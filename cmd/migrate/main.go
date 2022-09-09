@@ -8,7 +8,7 @@ import (
 )
 
 func main() {
-	dbUrl := env.Get("DATABASE_URL", "test.db")
+	dbUrl := env.Get("DATABASE_URL", "test.sqlite")
 	migrationsDir := env.Get("MIGRATIONS_DIR", "file://db/migrations")
 	db := models.Init(dbUrl)
 	defer db.Close()

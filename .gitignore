@@ -1,3 +1,4 @@
 *.db
 Session.vim*
 bin/
+*.sqlite
