@@ -99,6 +99,11 @@ func AuthMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		reqToken := r.Header.Get("Authorization")
 		splitToken := strings.Split(reqToken, "Bearer ")
+		if len(splitToken) < 2 {
+			http.Error(w, ErrInvalidToken.Error(), http.StatusBadRequest)
+			return
+		}
+
 		tokenString := splitToken[1]
 
 		token, err := jwt.ParseWithClaims(
