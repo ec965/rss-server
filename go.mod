@@ -4,9 +4,11 @@ go 1.18
 
 require (
 	github.com/go-chi/chi/v5 v5.0.7
+	github.com/golang-jwt/jwt/v4 v4.1.0
 	github.com/golang-migrate/migrate/v4 v4.15.2
 	github.com/mattn/go-sqlite3 v1.14.15
 	github.com/mmcdole/gofeed v1.1.3
+	golang.org/x/crypto v0.0.0-20210921155107-089bfa567519
 )
 
 require (

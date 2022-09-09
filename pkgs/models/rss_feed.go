@@ -2,120 +2,104 @@ package models
 
 import "context"
 
-// Data of RSS feed as stringified json
-type RSSFeed struct {
-	Id   int64
-	Data string
+type RssFeed struct {
+	Id    int64    `json:"rss_feed_id"`
+	Url   string   `json:"url"`
+	Label string   `json:"label"`
+	Tags  []string `json:"tags"`
 }
 
-// URL at which to fetch an RSS feed
-type RSSUrl struct {
-	Id  int64
-	Url string
-}
+func SelectAllFeedsForUser(ctx context.Context, userId int64) ([]RssFeed, error) {
+	rows, err := db.QueryContext(ctx,
+		`SELECT 
+      r.rss_feed_id, 
+      r.url,
+			r.label,
+      t.label
+    FROM rss_feed r
+    LEFT JOIN tag t ON t.rss_feed_id = r.rss_feed_id
+    WHERE r.user_id = ?;`, userId)
 
-// SelectAllRSSFeeds selects all rss feed data
-func SelectAllRSSFeeds(ctx context.Context) ([]RSSFeed, error) {
-	rows, err := db.QueryContext(ctx, "SELECT id, data FROM rss_feeds")
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
 
-	var feeds []RSSFeed
+	var feeds []RssFeed
+	tagMap := make(map[int64][]string)
 
 	for rows.Next() {
-		var feed RSSFeed
-
-		if err := rows.Scan(&feed.Id, &feed.Data); err != nil {
+		var feed RssFeed
+		var tag string
+		if err := rows.Scan(&feed.Id, &feed.Url, &feed.Label, &tag); err != nil {
 			return feeds, err
 		}
-
 		feeds = append(feeds, feed)
+		tagMap[feed.Id] = append(tagMap[feed.Id], tag)
 	}
 
 	if err = rows.Err(); err != nil {
 		return feeds, err
 	}
 
+	for _, feed := range feeds {
+		feed.Tags = tagMap[feed.Id]
+	}
+
 	return feeds, nil
 }
 
-// InsertRSSItem inserts a new rss item into the database
-func InsertRSSItem(ctx context.Context, url string, data []byte) (int64, error) {
-	stmt, err := db.PrepareContext(ctx, "INSERT INTO rss_feeds (url, data) VALUES (?, ?)")
+func SelectFeedForUser(ctx context.Context, userId int64, rssFeedId int64) (RssFeed, error) {
+	var feed RssFeed
 
-	var newId int64
-
+	rows, err := db.QueryContext(ctx,
+		`SELECT
+  r.rss_feed_id,
+  r.url,
+	r.label,
+  t.label
+FROM rss_feed r
+LEFT JOIN tag t on t.rss_feed_id = r.rss_feed_id
+WHERE r.user_id = ? AND r.rss_feed_id = ?;`, userId, rssFeedId)
 	if err != nil {
-		return newId, err
-	}
-
-	res, err := stmt.ExecContext(ctx, url, data)
-
-	if err != nil {
-		return newId, err
-	}
-
-	newId, err = res.LastInsertId()
-
-	if err != nil {
-		return newId, err
-	}
-
-	return newId, nil
-}
-
-// UpdateRSSFeedById updates an rss feed with new stringified json
-func UpdateRSSFeedById(ctx context.Context, id int64, data string) error {
-	stmt, err := db.PrepareContext(ctx, "UPDATE rss_feeds SET data = ? WHERE id = ?")
-
-	if err != nil {
-		return err
-	}
-
-	_, err = stmt.ExecContext(ctx, data, id)
-
-	if err != nil {
-		return err
-	}
-
-	return nil
-}
-
-// SelectAllRSSUrls returns all rss urls
-func SelectAllRSSUrls(ctx context.Context) ([]RSSUrl, error) {
-	rows, err := db.QueryContext(ctx, "SELECT id, url FROM rss_feeds")
-	if err != nil {
-		return nil, err
+		return feed, err
 	}
 	defer rows.Close()
 
-	var urls []RSSUrl
+	tags := []string{}
 
 	for rows.Next() {
-		var url RSSUrl
-		if err := rows.Scan(&url.Id, &url.Url); err != nil {
-			return urls, err
+		var tag string
+		if err := rows.Scan(&feed.Id, &feed.Url, &feed.Label, &tag); err != nil {
+			return feed, err
 		}
-
-		urls = append(urls, url)
+		tags = append(tags, tag)
 	}
-	if err = rows.Err(); err != nil {
-		return urls, err
-	}
+	feed.Tags = tags
 
-	return urls, nil
+	return feed, nil
 }
 
-func DeleteRSSItemByUrl(ctx context.Context, url string) error {
-	stmt, err := db.PrepareContext(ctx, "DELETE FROM rss_feeds WHERE url = ?")
-	_, err = stmt.ExecContext(ctx, url)
+func InsertFeedForUser(ctx context.Context, userId int64, url string, label string) (int64, error) {
+	res, err := db.ExecContext(ctx,
+		`INSERT INTO rss_feed (user_id, url, label) VALUES (?, ?, ?);`, userId, url, label)
 
 	if err != nil {
-		return err
-
+		return 0, err
 	}
-	return nil
 
+	return res.LastInsertId()
+}
+
+func DeleteFeedForUser(ctx context.Context, userId int64, rssFeedId int64) (int64, error) {
+	res, err := db.ExecContext(ctx,
+		`DELETE FROM rss_feed WHERE user_id = ? AND rss_feed_id = ?;`,
+		userId,
+		rssFeedId,
+	)
+	if err != nil {
+		return 0, err
+	}
+
+	return res.RowsAffected()
 }

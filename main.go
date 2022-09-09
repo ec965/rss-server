@@ -22,10 +22,15 @@ func main() {
 	r := chi.NewRouter()
 
 	r.Use(middleware.Logger)
-	r.Get("/feeds", handlers.GetFeeds)
-	r.Get("/feeds/update", handlers.UpdateFeeds)
-	r.Post("/feed", handlers.AddFeed)
-	r.Delete("/feed", handlers.DeleteFeed)
+	r.Post("/login", handlers.Login)
+	r.Post("/signup", handlers.SignUp)
+
+	r.Route("/feed", func(r chi.Router){
+		r.Use(handlers.AuthMiddleware)
+		r.Get("/{feedId}", handlers.GetFeed)
+		r.Get("/", handlers.GetFeeds)
+		r.Post("/", handlers.PostAddFeed)
+	})
 
 	log.Print("Listening on http://localhost:" + port)
 
