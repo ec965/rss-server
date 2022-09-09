@@ -16,7 +16,7 @@ var AuthCtxUserId = "userId"
 
 type TokenClaims struct {
 	Email  string `json:"email"`
-	UserId int64  `json:"user_id"`
+	UserId int64  `json:"userId"`
 	jwt.StandardClaims
 }
 
@@ -27,7 +27,7 @@ type LoginBody struct {
 
 type LoginResponse struct {
 	Email  string `json:"email"`
-	UserId int64  `json:"user_id"`
+	UserId int64  `json:"userId"`
 	Token  string `json:"token"`
 }
 

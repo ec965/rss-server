@@ -22,7 +22,7 @@ func GetFeeds(w http.ResponseWriter, r *http.Request) {
 
 	feeds, err := models.SelectAllFeedsForUser(context.TODO(), userId)
 	if err != nil {
-		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 	w.WriteHeader(http.StatusOK)
